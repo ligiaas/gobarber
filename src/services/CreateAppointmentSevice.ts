@@ -1,30 +1,20 @@
 import { startOfHour } from 'date-fns';
-
+import { getCustomRepository } from 'typeorm';
 import Appointment from '../models/Appointments';
 import AppointmentsRepository from '../repositories/AppointmentsRepository';
 
-/** Problemas p/ resolver
- * [x] Recebimento das informações
- * [x] Tratativa de erros/excessões
- * [x] Acesso ao repositório
- */
-
-interface RequestDTO {
+interface Request {
+  providerId: string;
   date: Date;
-  provider: string;
 }
 
 class CreateAppointmentService {
-  private appointmentsRepository: AppointmentsRepository;
+  public async execute({ date, providerId }: Request): Promise<Appointment> {
+    const appointmentsRepository = getCustomRepository(AppointmentsRepository);
 
-  constructor(appointmentsRepository: AppointmentsRepository) {
-    this.appointmentsRepository = appointmentsRepository;
-  }
-
-  public execute({ date, provider }: RequestDTO): Appointment {
     const appointmentDate = startOfHour(date);
 
-    const findAppointmentIsSameDate = this.appointmentsRepository.findByDate(
+    const findAppointmentIsSameDate = await appointmentsRepository.findByDate(
       appointmentDate,
     );
 
@@ -32,10 +22,12 @@ class CreateAppointmentService {
       throw Error('This appointment has been boked');
     }
 
-    const appointment = this.appointmentsRepository.create({
-      provider,
+    const appointment = appointmentsRepository.create({
+      providerId,
       date: appointmentDate,
     });
+
+    await appointmentsRepository.save(appointment);
 
     return appointment;
   }
