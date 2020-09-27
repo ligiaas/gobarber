@@ -1,5 +1,7 @@
 import { startOfHour } from 'date-fns';
 import { getCustomRepository } from 'typeorm';
+
+import AppError from '../errors/AppError';
 import Appointment from '../models/Appointments';
 import AppointmentsRepository from '../repositories/AppointmentsRepository';
 
@@ -19,7 +21,7 @@ class CreateAppointmentService {
     );
 
     if (findAppointmentIsSameDate) {
-      throw Error('This appointment has been boked');
+      throw new AppError('This appointment has been boked');
     }
 
     const appointment = appointmentsRepository.create({
