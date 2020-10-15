@@ -8,7 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import User from './User';
+import User from '@modules/users/infra/typeorm/entities/User';
 
 /* P/ usar o @ vc tem que ir no tsconfig.json e mudar as vars
  *  "emitDecoratorMetadata" e "experimentalDecorators" pra true e descomentar
