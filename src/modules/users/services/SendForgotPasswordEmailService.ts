@@ -10,15 +10,16 @@ interface IRequest {
 }
 
 @injectable()
-class SendForgotEmailService {
+class SendForgotPasswordEmailService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
 
+    @inject('UserTokensRepository')
+    private UserTokensRepository: IUserTokensRepository,
+
     @inject('MailProvider')
     private mailProvider: IMailProvider,
-
-    private iUserTokensRepository: IUserTokensRepository,
   ) {}
 
   public async execute({ email }: IRequest): Promise<void> {
@@ -28,7 +29,7 @@ class SendForgotEmailService {
       throw new AppError('User does not exists.');
     }
 
-    await this.iUserTokensRepository.generate(user.id);
+    await this.UserTokensRepository.generate(user.id);
 
     await this.mailProvider.sendMail(
       email,
@@ -37,4 +38,4 @@ class SendForgotEmailService {
   }
 }
 
-export default SendForgotEmailService;
+export default SendForgotPasswordEmailService;
